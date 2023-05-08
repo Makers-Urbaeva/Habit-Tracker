@@ -1,9 +1,9 @@
 package com.example.service.impl;
 
 import com.example.config.jwt.JwtService;
-import com.example.dto.request.AuthenticationRequest;
-import com.example.dto.request.RegisterRequest;
+import com.example.dto.request.*;
 import com.example.dto.response.AuthenticationResponse;
+import com.example.dto.response.SimpleResponse;
 import com.example.entity.User;
 import com.example.enums.Role;
 import com.example.exceptions.AlreadyExistException;
@@ -17,16 +17,23 @@ import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
+import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.HttpStatus;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -36,6 +43,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
+    private final JavaMailSender javaMailSender;
 
     @Override
     public AuthenticationResponse register(RegisterRequest registerRequest) {
@@ -112,6 +120,76 @@ public class UserServiceImpl implements UserService {
                 .email(firebaseToken.getEmail())
                 .token(token)
                 .role(user.getRole().name())
+                .build();
+    }
+
+    public String getCurrentUser() {
+        return jwtService.getUserInToken().getEmail();
+    }
+
+    @Override
+    public SimpleResponse changePassword(ChangePasswordRequest request) {
+        try {
+            User user = userRepository.findByEmail(getCurrentUser()).
+                    orElseThrow(() -> new NotFoundException(String.format("User with email : %s doesn't exists! ", getCurrentUser())));
+            if (!passwordEncoder.matches(request.oldPassword(), user.getPassword())) {
+                return SimpleResponse.builder().status(HttpStatus.NOT_FOUND).message("Wrong old password.").build();
+            }
+            user.setPassword(passwordEncoder.encode(request.newPassword()));
+            userRepository.save(user);
+            return SimpleResponse.builder().status(HttpStatus.OK).message("Password updated successfully.").build();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return SimpleResponse.builder().status(HttpStatus.INTERNAL_SERVER_ERROR).message("Something went wrong.").build();
+    }
+
+    @Override
+    public SimpleResponse forgotPassword(ForgotPasswordRequest request) {
+        User user = userRepository.findByEmail(request.email())
+                .orElseThrow(() -> new NotFoundException(
+                        String.format("User with email: %s doesn't exist!", request.email())));
+        String token = UUID.randomUUID().toString();
+        user.setResetToken(token);
+        userRepository.save(user);
+        try {
+            String senderName = "Habit tracker user registration portal server";
+            String subject ="Here is the link to reset your password";
+            MimeMessage message = javaMailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+            helper.setFrom("habittracker.service@gmail.com", senderName);
+            helper.setTo(request.email());
+            helper.setSubject(subject);
+            String htmlMessage = "<p>Hello,</p>" +
+                    "<p>You have requested to reset your password.</p>" +
+                    "<p>Click the link below to change your password:</p>" +
+                    "<p><b><a href=\"http://localhost:2023/processResetPassword=?" + token + "\">Change my password</a><b></p>" +
+                    "<p>Ignore this email if you do remember your password, or you have not made the request.</p>";
+            helper.setText(htmlMessage, true);
+            javaMailSender.send(message);
+            return SimpleResponse.builder()
+                    .status(HttpStatus.OK)
+                    .message("Check your email for credentials.")
+                    .build();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return SimpleResponse.builder()
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .message("Something went wrong.")
+                .build();
+    }
+
+    @Override
+    public SimpleResponse resetToken(NewPasswordRequest newPasswordRequest) {
+        User user = userRepository.findByResetToken(newPasswordRequest.token())
+                .orElseThrow(() -> new NotFoundException("Invalid token"));
+        user.setPassword(passwordEncoder.encode(newPasswordRequest.newPassword()));
+        user.setResetToken(null);
+        userRepository.save(user);
+        return SimpleResponse.builder()
+                .status(HttpStatus.OK)
+                .message("Successfully updated!")
                 .build();
     }
 }
