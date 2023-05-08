@@ -49,20 +49,18 @@ public class UserServiceImpl implements UserService {
     @Override
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         User user = userRepository.findByEmail(request.email())
-                .orElseThrow(()-> new NotFoundException(
+                .orElseThrow(() -> new NotFoundException(
                         String.format("User with email: %s doesn't exist!", request.email())));
-       if (!passwordEncoder.matches(request.password(), user.getPassword())){
-           throw new BadCredentialException("Invalid password!");
-       }
-       authenticationManager.authenticate(
-               new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword())
-       );
-
-       String token = jwtService.generateToken(user);
+        if (!passwordEncoder.matches(request.password(), user.getPassword())) {
+            throw new BadCredentialException("Invalid password!");
+        }
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.email(), request.password()));
+        String token = jwtService.generateToken(user);
         return AuthenticationResponse.builder()
-                .email(request.email())
+                .email(user.getEmail())
                 .token(token)
                 .role(user.getRole().name())
                 .build();
     }
+
 }
