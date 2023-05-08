@@ -4,6 +4,7 @@ import com.example.dto.request.AuthenticationRequest;
 import com.example.dto.request.RegisterRequest;
 import com.example.dto.response.AuthenticationResponse;
 import com.example.service.UserService;
+import com.google.firebase.auth.FirebaseAuthException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
@@ -23,5 +24,10 @@ public class UserApi {
     @PostMapping("/signIn")
     public AuthenticationResponse authenticate(@RequestBody @Valid AuthenticationRequest authenticationRequest){
         return userService.authenticate(authenticationRequest);
+    }
+
+    @PostMapping("/auth-google")
+    public AuthenticationResponse authWithGoogle(String tokenId) throws FirebaseAuthException {
+        return userService.authWithGoogle(tokenId);
     }
 }
