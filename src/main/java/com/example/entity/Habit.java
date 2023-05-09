@@ -1,5 +1,6 @@
 package com.example.entity;
 
+import com.example.enums.ExecutionFrequency;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -18,7 +19,8 @@ public class Habit {
     private String name;
     private String description;
     private Integer goal;
-    private String frequency;
+    @Enumerated(EnumType.STRING)
+    private ExecutionFrequency frequency;
     private LocalDate start_date;
     private LocalDate end_date;
 }

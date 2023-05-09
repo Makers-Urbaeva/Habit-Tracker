@@ -1,5 +1,6 @@
 package com.example.dto.request;
 
+import com.example.enums.ExecutionFrequency;
 import lombok.Builder;
 
 import java.time.LocalDate;
@@ -10,7 +11,7 @@ public record HabitUpdateRequest(
         String name,
         String description,
         Integer goal,
-        String frequency,
+        ExecutionFrequency frequency,
         LocalDate start_date,
         LocalDate end_date
 ) {
