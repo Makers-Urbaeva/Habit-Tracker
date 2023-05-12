@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface HabitRepository extends JpaRepository<Habit, Long> {
 
-    @Query("select new com.example.dto.response.HabitResponse(h.id,h.name,h.description,h.goal,h.frequency,h.start_date,h.end_date) from Habit h")
+    @Query("select new com.example.dto.response.HabitResponse(h.id,h.name,h.description,h.goal,h.frequency,h.calendar.startDate, h.calendar.endDate) from Habit h")
     List<HabitResponse> getAllHabits();
 
 }

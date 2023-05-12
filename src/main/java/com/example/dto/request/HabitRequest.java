@@ -7,6 +7,7 @@ import java.time.LocalDate;
 
 @Builder
 public record HabitRequest(
+        Long userId,
         String name,
         String description,
         Integer goal,

@@ -4,7 +4,11 @@ import com.example.enums.ExecutionFrequency;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+import static jakarta.persistence.CascadeType.*;
+import static jakarta.persistence.CascadeType.REFRESH;
 
 @Entity
 @NoArgsConstructor
@@ -21,6 +25,9 @@ public class Habit {
     private Integer goal;
     @Enumerated(EnumType.STRING)
     private ExecutionFrequency frequency;
-    private LocalDate start_date;
-    private LocalDate end_date;
+    private Boolean isDone;
+    @OneToOne(cascade = {PERSIST, DETACH, MERGE, REFRESH})
+    private Calendar calendar;
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<Measurement> measurements = new ArrayList<>();
 }

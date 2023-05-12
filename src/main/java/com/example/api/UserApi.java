@@ -1,7 +1,7 @@
 package com.example.api;
 
 import com.example.dto.request.AuthenticationRequest;
-import com.example.dto.request.RegisterRequest;
+import com.example.dto.request.UserRequest;
 import com.example.dto.response.AuthenticationResponse;
 import com.example.service.UserService;
 import com.google.firebase.auth.FirebaseAuthException;
@@ -16,8 +16,8 @@ public class UserApi {
     private final UserService userService;
 
     @PostMapping("/signUp")
-    public AuthenticationResponse signUp(@RequestBody @Valid RegisterRequest registerRequest){
-        return userService.register(registerRequest);
+    public AuthenticationResponse signUp(@RequestBody @Valid UserRequest request){
+        return userService.register(request);
     }
 
     @PostMapping("/signIn")

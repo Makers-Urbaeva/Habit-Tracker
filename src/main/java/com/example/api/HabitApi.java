@@ -55,4 +55,12 @@ public class HabitApi {
     public SimpleResponse update(HabitUpdateRequest request){
         return habitService.update(request);
     }
+
+
+    @PutMapping("/changeStatus")
+    @Operation(summary = "The habit status change method.",
+            description = "This method should be used to change status of habit")
+    public SimpleResponse changeStatus(Boolean isDone, Long habitId){
+        return habitService.changeHabitStatus(isDone, habitId);
+    }
 }

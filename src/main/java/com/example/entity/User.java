@@ -7,8 +7,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
+import static jakarta.persistence.CascadeType.ALL;
 
 @Entity
 @NoArgsConstructor
@@ -24,13 +27,18 @@ public class User implements UserDetails {
     private Long id;
     @Column(name = "full_name")
     private String fullName;
+    private String icon;
     private String email;
     private String password;
+
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<Habit> habits;
+    @OneToOne(cascade = ALL, mappedBy = "user")
+    private Calendar calendar;
+
+    @OneToMany(cascade = ALL)
+    private List<Achievement> achievements;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -17,4 +17,6 @@ public interface HabitService {
     SimpleResponse delete(Long id);
 
     SimpleResponse update(HabitUpdateRequest request);
+
+    SimpleResponse changeHabitStatus(Boolean isDone, Long habitId);
 }

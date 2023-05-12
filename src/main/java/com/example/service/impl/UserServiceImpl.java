@@ -2,7 +2,7 @@ package com.example.service.impl;
 
 import com.example.config.jwt.JwtService;
 import com.example.dto.request.AuthenticationRequest;
-import com.example.dto.request.RegisterRequest;
+import com.example.dto.request.UserRequest;
 import com.example.dto.response.AuthenticationResponse;
 import com.example.entity.User;
 import com.example.enums.Role;
@@ -38,14 +38,14 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManager authenticationManager;
 
     @Override
-    public AuthenticationResponse register(RegisterRequest registerRequest) {
-        if (userRepository.existsByEmail(registerRequest.email())){
+    public AuthenticationResponse register(UserRequest request) {
+        if (userRepository.existsByEmail(request.email())){
             throw new AlreadyExistException("This email already exists!");
         }
         User user = User.builder()
-                .fullName(registerRequest.fullName())
-                .email(registerRequest.email())
-                .password(passwordEncoder.encode(registerRequest.password()))
+                .fullName(request.fullName())
+                .email(request.email())
+                .password(passwordEncoder.encode(request.password()))
                 .role(Role.USER)
                 .build();
         userRepository.save(user);
