@@ -8,7 +8,7 @@ import com.example.dto.response.SimpleResponse;
 import java.util.List;
 
 public interface HabitService {
-    SimpleResponse save(HabitRequest request);
+    SimpleResponse save(Long userId,HabitRequest request);
 
     HabitResponse getHabit(String habitName);
 

@@ -27,11 +27,12 @@ public class HabitApi {
         return habitService.getHabit(habitName);
     }
 
-    @PostMapping
+    @PostMapping("/save/{userId}")
     @Operation(summary = "Method for saving the habit request.",
             description = "You can save habit using this method.")
-    public SimpleResponse save(@RequestBody HabitRequest request){
-        return habitService.save(request);
+    public SimpleResponse save(@PathVariable Long userId,
+                               @RequestBody HabitRequest request){
+        return habitService.save(userId, request);
     }
 
     @GetMapping

@@ -1,12 +1,24 @@
-insert into users (id, full_name, email, password, role)
-values (1, 'Admin', 'admin@gmail.com', '$2a$12$eJPgDybKQRMGWIWDy4HctOJlTivV1ycy5O25m1aDZlLki/Ay9chk.', 'ADMIN'),
-    (2, 'Kulen', 'kulen@gmail.com', '$2a$12$B0a6q5omRDN9ILBg6fNha.2U.D9cncdzgysLn06BZuAtRNQKhyvCS', 'USER'),
-    (3, 'Buju', 'buju@gmail.com', '$2a$12$PtlmxWlio3OojiElE9CvsexbS7O/Iw3gNXqzV/UAd.wB6P1pW2Wc2', 'USER'),
-    (4, 'Musa', 'musa@gmail.com', '$2a$12$knEdGlPqijYwTl2n9X.y5.i5nsudsdN/Zd.6QbTYGV4qqyre.M6p.', 'USER');
+insert into users(id, email, full_name, icon, password, role)
+values (1,'burulai@gmail.com','Burulai','icon1','burulai','USER'),
+       (2,'kulen@gmail.com','Kulen','icon1','kulen','USER'),
+       (3,'musa@gmail.com','Muslima','icon1','musa','USER'),
+       (4,'buju@gmail.com','Buajar','icon1','buju','USER');
 
-insert into habit (id, name, description, goal, frequency, habit_status, start_date, end_date)
-values (1, 'Running', 'Running every day', 3, 'DAILY', 'TO_DO', '2023-05-01', '2023-05-01'),
-       (2, 'Reading', 'Reading every month', 3, 'MONTHLY', 'TO_DO', '2023-05-01', '2023-05-01'),
-       (3, 'Learning', 'Learning every week', 3, 'WEEKLY', 'TO_DO', '2023-05-01', '2023-05-01'),
-       (4, 'YOGA', 'YOGA every day', 3, 'DAILY', 'TO_DO', '2023-05-01', '2023-05-01');
+insert into calendar(id, end_date, start_date, user_id)
+values (1,'2023-05-31','2023-05-11',1),
+       (2,'2023-05-30','2023-05-10',2),
+       (3,'2023-05-29','2023-05-09',3),
+       (4,'2023-05-29','2023-05-09',4);
+
+insert into measurement(id, date, measure_type)
+values  (1,'2023-05-11','STEPS'),
+        (2,'2023-05-05','MINUTES'),
+        (3,'2023-05-24','ML'),
+        (4,'2023-05-24','MINUTES');
+
+insert into habit(id, description, frequency, goal, is_done, name, calendar_id, measurement_id)
+values  (1,'Running every day','DAILY',3,false,'Running',1,1),
+        (2,'Reading every week','WEEKLY',3,false,'Reading',1,2),
+        (3,'YOGA every month','MONTHLY',3,false,'YOGA',1,2),
+        (4,'Listenning podcast every day','DAILY',3,false,'Podcast',1,2);
 
