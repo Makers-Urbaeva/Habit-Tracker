@@ -4,6 +4,7 @@ import com.example.config.jwt.JwtService;
 import com.example.dto.request.AuthenticationRequest;
 import com.example.dto.request.UserRequest;
 import com.example.dto.response.AuthenticationResponse;
+import com.example.entity.Calendar;
 import com.example.entity.User;
 import com.example.enums.Role;
 import com.example.exceptions.AlreadyExistException;
@@ -42,12 +43,14 @@ public class UserServiceImpl implements UserService {
         if (userRepository.existsByEmail(request.email())){
             throw new AlreadyExistException("This email already exists!");
         }
+        Calendar calendar = Calendar.builder().build();
         User user = User.builder()
                 .fullName(request.fullName())
                 .email(request.email())
                 .password(passwordEncoder.encode(request.password()))
                 .role(Role.USER)
                 .build();
+        calendar.setUser(user);
         userRepository.save(user);
 
         String jwt = jwtService.generateToken(user);
