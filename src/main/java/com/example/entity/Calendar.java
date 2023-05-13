@@ -25,11 +25,12 @@ public class Calendar {
     private Long id;
     private LocalDate startDate;
     private LocalDate endDate;
-    @OneToMany(cascade = {PERSIST, MERGE, REFRESH, DETACH})
-    private List<Habit> habits;
-    @OneToOne()
+
+    @OneToOne(cascade = {PERSIST, MERGE, REFRESH, DETACH, REMOVE})
     private User user;
 
+    @OneToMany(cascade = {REMOVE})
+    private List<Habit> habits;
 
     public void addHabit(Habit habit){
         if (habits == null){

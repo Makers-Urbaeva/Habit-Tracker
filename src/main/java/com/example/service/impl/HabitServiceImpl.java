@@ -6,6 +6,7 @@ import com.example.dto.response.HabitResponse;
 import com.example.dto.response.SimpleResponse;
 import com.example.entity.Calendar;
 import com.example.entity.Habit;
+import com.example.entity.Measurement;
 import com.example.entity.User;
 import com.example.exceptions.NotFoundException;
 import com.example.repository.HabitRepository;
@@ -24,23 +25,26 @@ public class HabitServiceImpl implements HabitService {
     private final UserRepository userRepository;
 
     @Override
-    public SimpleResponse save(HabitRequest request) {
-        User user = userRepository.findById(request.userId())
+    public SimpleResponse save(Long userId, HabitRequest request) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException(
-                        String.format("User with id: %d doesn't exist!", request.userId())));
+                        String.format("User with id: %d doesn't exist!", userId)));
+        Calendar calendar = user.getCalendar();
+        calendar.setStartDate(request.start_date());
+        calendar.setEndDate(request.end_date());
+        Measurement measurement = Measurement.builder().
+                measureType(request.measureType()).build();
         Habit habit = Habit.builder()
                 .name(request.name())
                 .description(request.description())
                 .goal(request.goal())
                 .frequency(request.frequency())
+                .measurement(measurement)
                 .isDone(false)
-                .calendar(Calendar.builder()
-                        .startDate(request.start_date())
-                        .endDate(request.end_date())
-                        .build())
+                .calendar(calendar)
+                .measurement(measurement)
                 .build();
-        Calendar calendar = new Calendar();
-        calendar.addHabit(habit);
+        user.getCalendar().addHabit(habit);
         habitRepository.save(habit);
         return SimpleResponse.builder()
                 .status(HttpStatus.OK)

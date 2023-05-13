@@ -37,7 +37,7 @@ public class User implements UserDetails {
     @OneToOne(cascade = ALL, mappedBy = "user")
     private Calendar calendar;
 
-    @OneToMany(cascade = ALL)
+    @OneToMany(cascade = ALL, mappedBy = "user")
     private List<Achievement> achievements;
 
     @Override
